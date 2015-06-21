@@ -1,4 +1,4 @@
-# User MicroService In Go
+# User Microservice In Go
 
 This is a simple user managment microservice written in Go. On its own this service does not provide much value but it can be used as a fundamental building block of a much more complex application.
 
