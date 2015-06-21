@@ -43,15 +43,15 @@ func passwordSalt() (PasswordSalt, error) {
 	
 	// ---
 	
-    h := sha1.New()
+	h := sha1.New()
 	
 	// ---
 	
-    h.Write(b)
+	h.Write(b)
 	
 	// ---
 	
-    return PasswordSalt(base64.URLEncoding.EncodeToString(h.Sum(nil))), nil
+	return PasswordSalt(base64.URLEncoding.EncodeToString(h.Sum(nil))), nil
 }
 
 // ---
@@ -59,16 +59,16 @@ func passwordSalt() (PasswordSalt, error) {
 // ---
 
 func passwordHash(password Password, passwordSalt PasswordSalt) (PasswordHash) {
-    h := sha1.New()
+	h := sha1.New()
 	
 	// ---
 	
-    h.Write([]byte(password))
-    h.Write([]byte(passwordSalt))
+	h.Write([]byte(password))
+	h.Write([]byte(passwordSalt))
 	
 	// ---
 	
-    return PasswordHash(base64.URLEncoding.EncodeToString(h.Sum(nil)))
+	return PasswordHash(base64.URLEncoding.EncodeToString(h.Sum(nil)))
 }
 
 // ---
