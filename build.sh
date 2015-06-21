@@ -16,12 +16,12 @@ docker run \
 	-v "${CSD}/main:/src" \
 	-v "/var/run/docker.sock:/var/run/docker.sock" \
 	"centurylink/golang-builder" \
-	"websecurify/user-microservice"
+	"websecurify/go-user-microservice"
 	
 # ---
 # ---
 # ---
 
-rm "${CSD}/main/user-microservice"
+rm "${CSD}/main/go-user-microservice"
 
 # ---

@@ -21,7 +21,7 @@ import (
 // ---
 // ---
 
-type UserService struct {
+type UserMicroservice struct {
 }
 
 // ---
@@ -40,7 +40,7 @@ type CreateReply struct {
 
 // ---
 
-func (s *UserService) Create(r *http.Request, args *CreateArgs, reply *CreateReply) (error) {
+func (s *UserMicroservice) Create(r *http.Request, args *CreateArgs, reply *CreateReply) (error) {
 	id := Id(uuid.NewRandom().String())
 	
 	// ---
@@ -96,7 +96,7 @@ type DestroyReply struct {
 
 // ---
 
-func (s *UserService) Destroy(r *http.Request, args *DestroyArgs, reply *DestroyReply) (error) {
+func (s *UserMicroservice) Destroy(r *http.Request, args *DestroyArgs, reply *DestroyReply) (error) {
 	removeErr := MongoCollection.Remove(bson.M{"id": args.Id})
 	
 	if removeErr != nil {
@@ -123,7 +123,7 @@ type QueryReply struct {
 
 // ---
 
-func (s *UserService) Query(r *http.Request, args *QueryArgs, reply *QueryReply) (error) {
+func (s *UserMicroservice) Query(r *http.Request, args *QueryArgs, reply *QueryReply) (error) {
 	result := UserEntry{}
 	
 	// ---
@@ -159,7 +159,7 @@ type QueryByEmailReply struct {
 
 // ---
 
-func (s *UserService) QueryByEmail(r *http.Request, args *QueryByEmailArgs, reply *QueryByEmailReply) (error) {
+func (s *UserMicroservice) QueryByEmail(r *http.Request, args *QueryByEmailArgs, reply *QueryByEmailReply) (error) {
 	result := UserEntry{}
 	
 	// ---
@@ -196,7 +196,7 @@ type LoginReply struct {
 
 // ---
 
-func (s *UserService) Login(r *http.Request, args *LoginArgs, reply *LoginReply) (error) {
+func (s *UserMicroservice) Login(r *http.Request, args *LoginArgs, reply *LoginReply) (error) {
 	result := UserEntry{}
 	
 	// ---
@@ -239,7 +239,7 @@ type LoginByEmailReply struct {
 
 // ---
 
-func (s *UserService) LoginByEmail(r *http.Request, args *LoginByEmailArgs, reply *LoginByEmailReply) (error) {
+func (s *UserMicroservice) LoginByEmail(r *http.Request, args *LoginByEmailArgs, reply *LoginByEmailReply) (error) {
 	result := UserEntry{}
 	
 	// ---
@@ -280,7 +280,7 @@ type UpdateNameReply struct {
 
 // ---
 
-func (s *UserService) UpdateName(r *http.Request, args *UpdateNameArgs, reply *UpdateNameReply) (error) {
+func (s *UserMicroservice) UpdateName(r *http.Request, args *UpdateNameArgs, reply *UpdateNameReply) (error) {
 	updateErr := MongoCollection.Update(bson.M{"id": args.Id}, bson.M{"$set": bson.M{"name": args.Name}})
 	
 	if updateErr != nil {
@@ -306,7 +306,7 @@ type UpdatePasswordReply struct {
 
 // ---
 
-func (s *UserService) UpdatePassword(r *http.Request, args *UpdatePasswordArgs, reply *UpdatePasswordReply) (error) {
+func (s *UserMicroservice) UpdatePassword(r *http.Request, args *UpdatePasswordArgs, reply *UpdatePasswordReply) (error) {
 	result := UserEntry{}
 	
 	// ---

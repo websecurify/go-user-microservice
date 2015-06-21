@@ -4,7 +4,7 @@ FROM scratch
 # ---
 # ---
 
-COPY user-microservice /
+COPY go-user-microservice /
 
 # ---
 # ---
@@ -16,6 +16,6 @@ EXPOSE 8080
 # ---
 # ---
 
-ENTRYPOINT ["/user-microservice"]
+ENTRYPOINT ["/go-user-microservice"]
 
 # ---

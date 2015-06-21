@@ -4,6 +4,6 @@
 # ---
 # ---
 
-docker push "websecurify/user-microservice"
+docker push "websecurify/go-user-microservice"
 
 # ---

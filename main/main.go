@@ -1,4 +1,4 @@
-package main // import "github.com/websecurify/user-microservice"
+package main // import "github.com/websecurify/go-user-microservice"
 
 // ---
 // ---
@@ -33,7 +33,7 @@ func main() {
 	
 	// ---
 	
-	s.RegisterService(new(v1.UserService), "1")
+	s.RegisterService(new(v1.UserMicroservice), "1")
 	
 	// ---
 	

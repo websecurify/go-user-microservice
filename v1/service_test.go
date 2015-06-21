@@ -35,7 +35,7 @@ func findById(id Id) (UserEntry, error) {
 // ---
 
 func create(name Name, email Email, password Password) (CreateReply, error) {
-	s := UserService{}
+	s := UserMicroservice{}
 	
 	a := CreateArgs{
 		Name: name,
@@ -52,7 +52,7 @@ func create(name Name, email Email, password Password) (CreateReply, error) {
 }
 
 func destroy(id Id) (DestroyReply, error) {
-	s := UserService{}
+	s := UserMicroservice{}
 	
 	a := DestroyArgs{
 		Id: id,
@@ -67,7 +67,7 @@ func destroy(id Id) (DestroyReply, error) {
 }
 
 func query(id Id) (QueryReply, error) {
-	s := UserService{}
+	s := UserMicroservice{}
 	
 	a := QueryArgs{
 		Id: id,
@@ -82,7 +82,7 @@ func query(id Id) (QueryReply, error) {
 }
 
 func queryByEmail(email Email) (QueryByEmailReply, error) {
-	s := UserService{}
+	s := UserMicroservice{}
 	
 	a := QueryByEmailArgs{
 		Email: email,
@@ -97,7 +97,7 @@ func queryByEmail(email Email) (QueryByEmailReply, error) {
 }
 
 func login(id Id, password Password) (LoginReply, error) {
-	s := UserService{}
+	s := UserMicroservice{}
 	
 	a := LoginArgs{
 		Id: id,
@@ -113,7 +113,7 @@ func login(id Id, password Password) (LoginReply, error) {
 }
 
 func loginByEmail(email Email, password Password) (LoginByEmailReply, error) {
-	s := UserService{}
+	s := UserMicroservice{}
 	
 	a := LoginByEmailArgs{
 		Email: email,
@@ -129,7 +129,7 @@ func loginByEmail(email Email, password Password) (LoginByEmailReply, error) {
 }
 
 func updateName(id Id, name Name) (UpdateNameReply, error) {
-	s := UserService{}
+	s := UserMicroservice{}
 	
 	a := UpdateNameArgs{
 		Id: id,
@@ -145,7 +145,7 @@ func updateName(id Id, name Name) (UpdateNameReply, error) {
 }
 
 func updatePassword(id Id, password Password) (UpdatePasswordReply, error) {
-	s := UserService{}
+	s := UserMicroservice{}
 	
 	a := UpdatePasswordArgs{
 		Id: id,
