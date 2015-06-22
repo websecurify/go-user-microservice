@@ -29,7 +29,7 @@ type PasswordHash string
 // ---
 
 type UserEntry struct {
-	ObjectId bson.ObjectId `bson:"_id"`
+	ObjectId bson.ObjectId `bson:"_id,omitempty"`
 	Id Id `bson:"id"`
 	Name Name `bson:"name"`
 	Email Email `bson:"email"`
