@@ -43,7 +43,7 @@ type UserEntry struct {
 
 func initModel() {
 	index := mgo.Index{
-		Key: []string{"id"},
+		Key: []string{"id", "email"},
 		Unique: true,
 		DropDups: true,
 		Background: true,
