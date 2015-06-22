@@ -5,6 +5,7 @@ package v1
 // ---
 
 import (
+	"errors"
 	"testing"
 	
 	// ---
@@ -30,11 +31,25 @@ func findById(id Id) (UserEntry, error) {
 	return u, e
 }
 
+func ensureIdNotFound(id Id) (error) {
+	_, e := findById(id)
+	
+	if e != mgo.ErrNotFound {
+		if e != nil {
+			return e
+		} else {
+			return errors.New("entry found")
+		}
+	} else {
+		return nil
+	}
+}
+
 // ---
 // ---
 // ---
 
-func create(name Name, email Email, password Password) (CreateReply, error) {
+func doCreate(name Name, email Email, password Password) (CreateReply, error) {
 	s := UserMicroservice{}
 	
 	a := CreateArgs{
@@ -51,7 +66,7 @@ func create(name Name, email Email, password Password) (CreateReply, error) {
 	return r, e
 }
 
-func destroy(id Id) (DestroyReply, error) {
+func doDestroy(id Id) (DestroyReply, error) {
 	s := UserMicroservice{}
 	
 	a := DestroyArgs{
@@ -66,7 +81,7 @@ func destroy(id Id) (DestroyReply, error) {
 	return r, e
 }
 
-func query(id Id) (QueryReply, error) {
+func doQuery(id Id) (QueryReply, error) {
 	s := UserMicroservice{}
 	
 	a := QueryArgs{
@@ -81,7 +96,7 @@ func query(id Id) (QueryReply, error) {
 	return r, e
 }
 
-func queryByEmail(email Email) (QueryByEmailReply, error) {
+func doQueryByEmail(email Email) (QueryByEmailReply, error) {
 	s := UserMicroservice{}
 	
 	a := QueryByEmailArgs{
@@ -96,7 +111,7 @@ func queryByEmail(email Email) (QueryByEmailReply, error) {
 	return r, e
 }
 
-func login(id Id, password Password) (LoginReply, error) {
+func doLogin(id Id, password Password) (LoginReply, error) {
 	s := UserMicroservice{}
 	
 	a := LoginArgs{
@@ -112,7 +127,7 @@ func login(id Id, password Password) (LoginReply, error) {
 	return r, e
 }
 
-func loginByEmail(email Email, password Password) (LoginByEmailReply, error) {
+func doLoginByEmail(email Email, password Password) (LoginByEmailReply, error) {
 	s := UserMicroservice{}
 	
 	a := LoginByEmailArgs{
@@ -128,7 +143,7 @@ func loginByEmail(email Email, password Password) (LoginByEmailReply, error) {
 	return r, e
 }
 
-func updateName(id Id, name Name) (UpdateNameReply, error) {
+func doUpdateName(id Id, name Name) (UpdateNameReply, error) {
 	s := UserMicroservice{}
 	
 	a := UpdateNameArgs{
@@ -144,7 +159,7 @@ func updateName(id Id, name Name) (UpdateNameReply, error) {
 	return r, e
 }
 
-func updatePassword(id Id, password Password) (UpdatePasswordReply, error) {
+func doUpdatePassword(id Id, password Password) (UpdatePasswordReply, error) {
 	s := UserMicroservice{}
 	
 	a := UpdatePasswordArgs{
@@ -184,7 +199,7 @@ func TestEndToEnd(t *testing.T) {
 	
 	// ---
 	
-	cr, ce := create(name, email, password)
+	cr, ce := doCreate(name, email, password)
 	
 	if ce != nil {
 		t.Error(ce)
@@ -220,7 +235,7 @@ func TestEndToEnd(t *testing.T) {
 	
 	// ---
 	
-	qr, qe := query(cr.Id)
+	qr, qe := doQuery(cr.Id)
 	
 	if qe != nil {
 		t.Error(qe)
@@ -236,7 +251,7 @@ func TestEndToEnd(t *testing.T) {
 	
 	// ---
 	
-	qber, qbee := queryByEmail(email)
+	qber, qbee := doQueryByEmail(email)
 	
 	if qbee != nil {
 		t.Error(qbee)
@@ -252,7 +267,7 @@ func TestEndToEnd(t *testing.T) {
 	
 	// ---
 	
-	lr, le := login(cr.Id, password)
+	lr, le := doLogin(cr.Id, password)
 	
 	if le != nil {
 		t.Error(le)
@@ -268,7 +283,7 @@ func TestEndToEnd(t *testing.T) {
 	
 	// ---
 	
-	lber, lbee := loginByEmail(email, password)
+	lber, lbee := doLoginByEmail(email, password)
 	
 	if lbee != nil {
 		t.Error(lbee)
@@ -289,7 +304,7 @@ func TestEndToEnd(t *testing.T) {
 	
 	// ---
 	
-	_, une := updateName(cr.Id, name)
+	_, une := doUpdateName(cr.Id, name)
 	
 	if une != nil {
 		t.Error(une)
@@ -309,7 +324,7 @@ func TestEndToEnd(t *testing.T) {
 	
 	// ---
 	
-	_, upe := updatePassword(cr.Id, password)
+	_, upe := doUpdatePassword(cr.Id, password)
 	
 	if upe != nil {
 		t.Error(upe)
@@ -329,7 +344,7 @@ func TestEndToEnd(t *testing.T) {
 	
 	// ---
 	
-	_, le2 := login(cr.Id, password)
+	_, le2 := doLogin(cr.Id, password)
 	
 	if le2 != nil {
 		t.Error(le2)
@@ -337,7 +352,7 @@ func TestEndToEnd(t *testing.T) {
 	
 	// ---
 	
-	_, lbee2 := loginByEmail(email, password)
+	_, lbee2 := doLoginByEmail(email, password)
 	
 	if lbee2 != nil {
 		t.Error(lbee2)
@@ -345,7 +360,7 @@ func TestEndToEnd(t *testing.T) {
 	
 	// ---
 	
-	_, de := destroy(cr.Id)
+	_, de := doDestroy(cr.Id)
 	
 	if de != nil {
 		t.Error(de)
@@ -353,14 +368,10 @@ func TestEndToEnd(t *testing.T) {
 	
 	// ---
 	
-	_, fe4 := findById(cr.Id)
+	ee := ensureIdNotFound(cr.Id)
 	
-	if fe4 != mgo.ErrNotFound {
-		if fe4 != nil {
-			t.Error(fe4)
-		} else {
-			t.Error("entry found")
-		}
+	if ee != nil {
+		t.Error(ee)
 	}
 }
 
