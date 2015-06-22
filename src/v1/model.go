@@ -42,34 +42,30 @@ type UserEntry struct {
 // ---
 
 func initModel() {
-	index := mgo.Index{
-		Key: []string{"id", "email"},
+	idIndex := mgo.Index{
+		Key: []string{"id"},
 		Unique: true,
-		DropDups: true,
+		DropDups: false,
 		Background: true,
-		Sparse: true,
+		Sparse: false,
+	}
+	
+	idEnsureErr := MongoCollection.EnsureIndex(idIndex)
+	
+	if idEnsureErr != nil {
+		log.Fatal(idEnsureErr)
 	}
 	
 	// ---
 	
-	ensureErr := MongoCollection.EnsureIndex(index)
-	
-	if ensureErr != nil {
-		log.Fatal(ensureErr)
-	}
-	
-	// ---
-	
-	index2 := mgo.Index{
+	emailIndex := mgo.Index{
 		Key: []string{"email"},
 	}
 	
-	// ---
+	emailEnsureErr := MongoCollection.EnsureIndex(emailIndex)
 	
-	ensureErr2 := MongoCollection.EnsureIndex(index2)
-	
-	if ensureErr2 != nil {
-		log.Fatal(ensureErr2)
+	if emailEnsureErr != nil {
+		log.Fatal(emailEnsureErr)
 	}
 }
 
