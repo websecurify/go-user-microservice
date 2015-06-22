@@ -206,7 +206,7 @@ func TestEndToEnd(t *testing.T) {
 	}
 	
 	if cr.Id == "" {
-		t.Error("no reply id")
+		t.Error("id mismatch")
 	}
 	
 	// ---
