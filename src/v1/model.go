@@ -20,6 +20,7 @@ import (
 type Id string
 type Name string
 type Email string
+type Verified bool
 type Password string
 type PasswordSalt string
 type PasswordHash string
@@ -33,6 +34,7 @@ type UserEntry struct {
 	Id Id `bson:"id"`
 	Name Name `bson:"name"`
 	Email Email `bson:"email"`
+	Verified Verified `bson:"verified"`
 	PasswordSalt PasswordSalt `bson:"passwordSalt"`
 	PasswordHash PasswordHash `bson:"passwordHash"`
 }
