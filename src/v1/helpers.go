@@ -14,8 +14,8 @@ import (
 // ---
 // ---
 
-func randomBytes() ([]byte, error) {
-	b := make([]byte, 20)
+func randomBytes(size int) ([]byte, error) {
+	b := make([]byte, size)
 	
 	// ---
 	
@@ -52,7 +52,7 @@ func hash512(value []byte, salt []byte) (string) {
 // ---
 
 func passwordSalt() (PasswordSalt, error) {
-	b, e := randomBytes()
+	b, e := randomBytes(64)
 	
 	if e != nil {
 		return PasswordSalt(""), e
