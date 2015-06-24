@@ -10,11 +10,20 @@ import (
 	
 	// ---
 	
+	"gopkg.in/mgo.v2"
 	"gopkg.in/mgo.v2/bson"
 	
 	// ---
 	
 	"code.google.com/p/go-uuid/uuid"
+)
+
+// ---
+// ---
+// ---
+
+var (
+	ErrNotFound = errors.New("not found")
 )
 
 // ---
@@ -131,7 +140,11 @@ func (s *UserMicroservice) Query(r *http.Request, args *QueryArgs, reply *QueryR
 	findErr := MongoCollection.Find(bson.M{"id": args.Id}).One(&result)
 	
 	if findErr != nil {
-		return findErr
+		if findErr == mgo.ErrNotFound {
+			return ErrNotFound
+		} else {
+			return findErr
+		}
 	}
 	
 	// ---
@@ -167,7 +180,11 @@ func (s *UserMicroservice) QueryByEmail(r *http.Request, args *QueryByEmailArgs,
 	findErr := MongoCollection.Find(bson.M{"email": args.Email}).One(&result)
 	
 	if findErr != nil {
-		return findErr
+		if findErr == mgo.ErrNotFound {
+			return ErrNotFound
+		} else {
+			return findErr
+		}
 	}
 	
 	// ---
@@ -204,7 +221,11 @@ func (s *UserMicroservice) Login(r *http.Request, args *LoginArgs, reply *LoginR
 	findErr := MongoCollection.Find(bson.M{"id": args.Id}).One(&result)
 	
 	if findErr != nil {
-		return findErr
+		if findErr == mgo.ErrNotFound {
+			return ErrNotFound
+		} else {
+			return findErr
+		}
 	}
 	
 	// ---
@@ -247,7 +268,11 @@ func (s *UserMicroservice) LoginByEmail(r *http.Request, args *LoginByEmailArgs,
 	findErr := MongoCollection.Find(bson.M{"email": args.Email}).One(&result)
 	
 	if findErr != nil {
-		return findErr
+		if findErr == mgo.ErrNotFound {
+			return ErrNotFound
+		} else {
+			return findErr
+		}
 	}
 	
 	// ---
@@ -314,7 +339,11 @@ func (s *UserMicroservice) UpdatePassword(r *http.Request, args *UpdatePasswordA
 	findErr := MongoCollection.Find(bson.M{"id": args.Id}).One(&result)
 	
 	if findErr != nil {
-		return findErr
+		if findErr == mgo.ErrNotFound {
+			return ErrNotFound
+		} else {
+			return findErr
+		}
 	}
 	
 	// ---
