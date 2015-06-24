@@ -175,6 +175,36 @@ func doUpdatePassword(id Id, password Password) (UpdatePasswordReply, error) {
 	return r, e
 }
 
+func doStartVerification(id Id) (StartVerificationReply, error) {
+	s := UserMicroservice{}
+	
+	a := StartVerificationArgs{
+		Id: id,
+	}
+	
+	r := StartVerificationReply{
+	}
+	
+	e := s.StartVerification(nil, &a, &r)
+	
+	return r, e
+}
+
+func doVerify(token string) (VerifyReply, error) {
+	s := UserMicroservice{}
+	
+	a := VerifyArgs{
+		Token: token,
+	}
+	
+	r := VerifyReply{
+	}
+	
+	e := s.Verify(nil, &a, &r)
+	
+	return r, e
+}
+
 // ---
 // ---
 // ---
@@ -223,6 +253,10 @@ func TestEndToEnd(t *testing.T) {
 	
 	if fr.Email != email {
 		t.Error("email mismatch")
+	}
+	
+	if fr.Verified != false {
+		t.Error("verified mismatch")
 	}
 	
 	if fr.PasswordSalt == "" {
@@ -295,6 +329,38 @@ func TestEndToEnd(t *testing.T) {
 	
 	if lber.Name != name {
 		t.Error("name mismatch")
+	}
+	
+	// ---
+	
+	svr, sve := doStartVerification(cr.Id)
+	
+	if sve != nil {
+		t.Error(sve)
+	}
+	
+	if svr.Token == "" {
+		t.Error("token mismatch")
+	}
+	
+	// ---
+	
+	_, ve := doVerify(svr.Token)
+	
+	if ve != nil {
+		t.Error(ve)
+	}
+	
+	// ---
+	
+	qr2, qe2 := doQuery(cr.Id)
+	
+	if qe2 != nil {
+		t.Error(qe2)
+	}
+	
+	if qr2.Verified != true {
+		t.Error("verified mismatch")
 	}
 	
 	// ---
