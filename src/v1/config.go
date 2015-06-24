@@ -29,6 +29,8 @@ func init() {
 	// ---
 	
 	if VerificationKey == "" {
+		log.Println("generating verification key")
+		
 		vkb, vke := randomBytes(64)
 		
 		if vke != nil {

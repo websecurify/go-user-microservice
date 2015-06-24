@@ -64,8 +64,6 @@ func passwordSalt() (PasswordSalt, error) {
 }
 
 // ---
-// ---
-// ---
 
 func passwordHash(password Password, passwordSalt PasswordSalt) (PasswordHash) {
 	return PasswordHash(hash512([]byte(password), []byte(passwordSalt)))
