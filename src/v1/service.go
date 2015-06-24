@@ -24,6 +24,7 @@ import (
 
 var (
 	ErrNotFound = errors.New("not found")
+	ErrPasswordMismatch = errors.New("password mismatch")
 )
 
 // ---
@@ -231,7 +232,7 @@ func (s *UserMicroservice) Login(r *http.Request, args *LoginArgs, reply *LoginR
 	// ---
 	
 	if result.PasswordHash != passwordHash(args.Password, result.PasswordSalt) {
-		return errors.New("password mismatch")
+		return ErrPasswordMismatch
 	}
 	
 	// ---
@@ -278,7 +279,7 @@ func (s *UserMicroservice) LoginByEmail(r *http.Request, args *LoginByEmailArgs,
 	// ---
 	
 	if result.PasswordHash != passwordHash(args.Password, result.PasswordSalt) {
-		return errors.New("password mismatch")
+		return ErrPasswordMismatch
 	}
 	
 	// ---
