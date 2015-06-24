@@ -6,7 +6,7 @@ package v1
 
 import (
 	"crypto/rand"
-	"crypto/sha1"
+	"crypto/sha512"
 	"encoding/base64"
 )
 
@@ -34,6 +34,23 @@ func randomBytes() ([]byte, error) {
 // ---
 // ---
 
+func hash512(value []byte, salt []byte) (string) {
+	h := sha512.New()
+	
+	// ---
+	
+	h.Write(value)
+	h.Write(salt)
+	
+	// ---
+	
+	return base64.URLEncoding.EncodeToString(h.Sum(nil))
+}
+
+// ---
+// ---
+// ---
+
 func passwordSalt() (PasswordSalt, error) {
 	b, e := randomBytes()
 	
@@ -43,15 +60,7 @@ func passwordSalt() (PasswordSalt, error) {
 	
 	// ---
 	
-	h := sha1.New()
-	
-	// ---
-	
-	h.Write(b)
-	
-	// ---
-	
-	return PasswordSalt(base64.URLEncoding.EncodeToString(h.Sum(nil))), nil
+	return PasswordSalt(hash512(b, nil)), nil
 }
 
 // ---
@@ -59,16 +68,7 @@ func passwordSalt() (PasswordSalt, error) {
 // ---
 
 func passwordHash(password Password, passwordSalt PasswordSalt) (PasswordHash) {
-	h := sha1.New()
-	
-	// ---
-	
-	h.Write([]byte(password))
-	h.Write([]byte(passwordSalt))
-	
-	// ---
-	
-	return PasswordHash(base64.URLEncoding.EncodeToString(h.Sum(nil)))
+	return PasswordHash(hash512([]byte(password), []byte(passwordSalt)))
 }
 
 // ---
