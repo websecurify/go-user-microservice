@@ -395,10 +395,10 @@ func (s *UserMicroservice) StartVerification(r *http.Request, args *StartVerific
 	
 	token := jwt.New(jwt.SigningMethodHS256)
 	
-	token.Claims["userId"] = string(args.Id)
+	token.Claims["uid"] = string(args.Id)
 	token.Claims["exp"] = time.Now().Add(time.Hour * 1).Unix()
 	
-	tokenString, tokenStringErr := token.SignedString([]byte(ValidationKey))
+	tokenString, tokenStringErr := token.SignedString([]byte(VerificationKey))
 	
 	if tokenStringErr != nil {
 		return tokenStringErr
@@ -426,7 +426,7 @@ type VerifyReply struct {
 
 func (s *UserMicroservice) Verify(r *http.Request, args *VerifyArgs, reply *VerifyReply) (error) {
 	token, tokenErr := jwt.Parse(args.Token, func(token *jwt.Token) (interface{}, error) {
-		return []byte(ValidationKey), nil
+		return []byte(VerificationKey), nil
 	})
 	
 	if tokenErr != nil {
@@ -439,7 +439,7 @@ func (s *UserMicroservice) Verify(r *http.Request, args *VerifyArgs, reply *Veri
 	
 	// ---
 	
-	updateErr := MongoCollection.Update(bson.M{"id": token.Claims["userId"]}, bson.M{"$set": bson.M{"verified": true}})
+	updateErr := MongoCollection.Update(bson.M{"id": token.Claims["uid"]}, bson.M{"$set": bson.M{"verified": true}})
 	
 	if updateErr != nil {
 		return updateErr

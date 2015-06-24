@@ -6,6 +6,7 @@ package v1
 
 import (
 	"os"
+	"log"
 )
 
 // ---
@@ -14,7 +15,7 @@ import (
 
 var MongoServers string
 var MongoDatabase string
-var ValidationKey string
+var VerificationKey string
 
 // ---
 // ---
@@ -23,7 +24,19 @@ var ValidationKey string
 func init() {
 	MongoServers = os.Getenv("MONGO_SERVERS")
 	MongoDatabase = os.Getenv("MONGO_DATABASE")
-	ValidationKey = os.Getenv("VALIDATION_KEY")
+	VerificationKey = os.Getenv("VERIFICATION_KEY")
+	
+	// ---
+	
+	if VerificationKey == "" {
+		vkb, vke := randomBytes(64)
+		
+		if vke != nil {
+			log.Fatal(vke)
+		}
+		
+		VerificationKey = hash512(vkb, nil)
+	}
 }
 
 // ---
