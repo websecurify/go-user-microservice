@@ -175,22 +175,22 @@ func doUpdatePassword(id Id, password Password) (UpdatePasswordReply, error) {
 	return r, e
 }
 
-func doStartVerification(id Id) (StartVerificationReply, error) {
+func doStartVerify(id Id) (StartVerifyReply, error) {
 	s := UserMicroservice{}
 	
-	a := StartVerificationArgs{
+	a := StartVerifyArgs{
 		Id: id,
 	}
 	
-	r := StartVerificationReply{
+	r := StartVerifyReply{
 	}
 	
-	e := s.StartVerification(nil, &a, &r)
+	e := s.StartVerify(nil, &a, &r)
 	
 	return r, e
 }
 
-func doVerify(token string) (VerifyReply, error) {
+func doVerify(token Token) (VerifyReply, error) {
 	s := UserMicroservice{}
 	
 	a := VerifyArgs{
@@ -333,7 +333,7 @@ func TestEndToEnd(t *testing.T) {
 	
 	// ---
 	
-	svr, sve := doStartVerification(cr.Id)
+	svr, sve := doStartVerify(cr.Id)
 	
 	if sve != nil {
 		t.Error(sve)

@@ -13,23 +13,39 @@ import (
 // ---
 // ---
 
+var ResetKey string
+var VerifyKey string
 var MongoServers string
 var MongoDatabase string
-var VerificationKey string
 
 // ---
 // ---
 // ---
 
 func init() {
+	ResetKey = os.Getenv("RESET_KEY")
+	VerifyKey = os.Getenv("VERIFY_KEY")
 	MongoServers = os.Getenv("MONGO_SERVERS")
 	MongoDatabase = os.Getenv("MONGO_DATABASE")
-	VerificationKey = os.Getenv("VERIFICATION_KEY")
 	
 	// ---
 	
-	if VerificationKey == "" {
-		log.Println("generating verification key")
+	if ResetKey == "" {
+		log.Println("generating verify key")
+		
+		rkb, rke := randomBytes(64)
+		
+		if rke != nil {
+			log.Fatal(rke)
+		}
+		
+		ResetKey = hash512(rkb, nil)
+	}
+	
+	// ---
+	
+	if VerifyKey == "" {
+		log.Println("generating reset key")
 		
 		vkb, vke := randomBytes(64)
 		
@@ -37,7 +53,7 @@ func init() {
 			log.Fatal(vke)
 		}
 		
-		VerificationKey = hash512(vkb, nil)
+		VerifyKey = hash512(vkb, nil)
 	}
 }
 
