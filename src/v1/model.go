@@ -20,6 +20,7 @@ import (
 type Id string
 type Name string
 type Email string
+type Token string
 type Verified bool
 type Password string
 type PasswordSalt string

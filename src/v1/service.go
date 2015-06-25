@@ -5,32 +5,7 @@ package v1
 // ---
 
 import (
-	"time"
-	"errors"
 	"net/http"
-	
-	// ---
-	
-	"gopkg.in/mgo.v2"
-	"gopkg.in/mgo.v2/bson"
-	
-	// ---
-	
-	"github.com/dgrijalva/jwt-go"
-	
-	// ---
-	
-	"code.google.com/p/go-uuid/uuid"
-)
-
-// ---
-// ---
-// ---
-
-var (
-	ErrNotFound = errors.New("not found")
-	ErrInvalidToken = errors.New("invalid token")
-	ErrPasswordMismatch = errors.New("password mismatch")
 )
 
 // ---
@@ -58,47 +33,11 @@ type CreateReply struct {
 // ---
 
 func (s *UserMicroservice) Create(r *http.Request, args *CreateArgs, reply *CreateReply) (error) {
-	id := Id(uuid.NewRandom().String())
+	var err error
 	
-	// ---
+	reply.Id, err = Create(args.Name, args.Email, args.Verified, args.Password)
 	
-	passwordSalt, passwordSaltErr := passwordSalt()
-	
-	if passwordSaltErr != nil {
-		return passwordSaltErr
-	}
-	
-	// ---
-	
-	passwordHash := passwordHash(args.Password, passwordSalt)
-	
-	// ---
-	
-	entry := UserEntry{
-		ObjectId: bson.NewObjectId(),
-		Id: id,
-		Name: args.Name,
-		Email: args.Email,
-		Verified: args.Verified,
-		PasswordSalt: passwordSalt,
-		PasswordHash: passwordHash,
-	}
-	
-	// ---
-	
-	insertErr := MongoCollection.Insert(entry)
-	
-	if insertErr != nil {
-		return insertErr
-	}
-	
-	// ---
-	
-	reply.Id = id
-	
-	// ---
-	
-	return nil
+	return err
 }
 
 // ---
@@ -115,15 +54,11 @@ type DestroyReply struct {
 // ---
 
 func (s *UserMicroservice) Destroy(r *http.Request, args *DestroyArgs, reply *DestroyReply) (error) {
-	removeErr := MongoCollection.Remove(bson.M{"id": args.Id})
+	var err error
 	
-	if removeErr != nil {
-		return removeErr
-	}
+	err = Destroy(args.Id)
 	
-	// ---
-	
-	return nil
+	return err
 }
 
 // ---
@@ -143,27 +78,11 @@ type QueryReply struct {
 // ---
 
 func (s *UserMicroservice) Query(r *http.Request, args *QueryArgs, reply *QueryReply) (error) {
-	result := UserEntry{}
+	var err error
 	
-	findErr := MongoCollection.Find(bson.M{"id": args.Id}).One(&result)
+	reply.Name, reply.Email, reply.Verified, err = Query(args.Id)
 	
-	if findErr != nil {
-		if findErr == mgo.ErrNotFound {
-			return ErrNotFound
-		} else {
-			return findErr
-		}
-	}
-	
-	// ---
-	
-	reply.Name = result.Name
-	reply.Email = result.Email
-	reply.Verified = result.Verified
-	
-	// ---
-	
-	return nil
+	return err
 }
 
 // ---
@@ -183,27 +102,11 @@ type QueryByEmailReply struct {
 // ---
 
 func (s *UserMicroservice) QueryByEmail(r *http.Request, args *QueryByEmailArgs, reply *QueryByEmailReply) (error) {
-	result := UserEntry{}
+	var err error
 	
-	findErr := MongoCollection.Find(bson.M{"email": args.Email}).One(&result)
+	reply.Id, reply.Name, reply.Verified, err = QueryByEmail(args.Email)
 	
-	if findErr != nil {
-		if findErr == mgo.ErrNotFound {
-			return ErrNotFound
-		} else {
-			return findErr
-		}
-	}
-	
-	// ---
-	
-	reply.Id = result.Id
-	reply.Name = result.Name
-	reply.Verified = result.Verified
-	
-	// ---
-	
-	return nil
+	return err
 }
 
 // ---
@@ -224,33 +127,11 @@ type LoginReply struct {
 // ---
 
 func (s *UserMicroservice) Login(r *http.Request, args *LoginArgs, reply *LoginReply) (error) {
-	result := UserEntry{}
+	var err error
 	
-	findErr := MongoCollection.Find(bson.M{"id": args.Id}).One(&result)
+	reply.Name, reply.Email, reply.Verified, err = Login(args.Id, args.Password)
 	
-	if findErr != nil {
-		if findErr == mgo.ErrNotFound {
-			return ErrNotFound
-		} else {
-			return findErr
-		}
-	}
-	
-	// ---
-	
-	if result.PasswordHash != passwordHash(args.Password, result.PasswordSalt) {
-		return ErrPasswordMismatch
-	}
-	
-	// ---
-	
-	reply.Name = result.Name
-	reply.Email = result.Email
-	reply.Verified = result.Verified
-	
-	// ---
-	
-	return nil
+	return err
 }
 
 // ---
@@ -271,33 +152,11 @@ type LoginByEmailReply struct {
 // ---
 
 func (s *UserMicroservice) LoginByEmail(r *http.Request, args *LoginByEmailArgs, reply *LoginByEmailReply) (error) {
-	result := UserEntry{}
+	var err error
 	
-	findErr := MongoCollection.Find(bson.M{"email": args.Email}).One(&result)
+	reply.Id, reply.Name, reply.Verified, err = LoginByEmail(args.Email, args.Password)
 	
-	if findErr != nil {
-		if findErr == mgo.ErrNotFound {
-			return ErrNotFound
-		} else {
-			return findErr
-		}
-	}
-	
-	// ---
-	
-	if result.PasswordHash != passwordHash(args.Password, result.PasswordSalt) {
-		return ErrPasswordMismatch
-	}
-	
-	// ---
-	
-	reply.Id = result.Id
-	reply.Name = result.Name
-	reply.Verified = result.Verified
-	
-	// ---
-	
-	return nil
+	return err
 }
 
 // ---
@@ -315,15 +174,11 @@ type UpdateNameReply struct {
 // ---
 
 func (s *UserMicroservice) UpdateName(r *http.Request, args *UpdateNameArgs, reply *UpdateNameReply) (error) {
-	updateErr := MongoCollection.Update(bson.M{"id": args.Id}, bson.M{"$set": bson.M{"name": args.Name}})
+	var err error
 	
-	if updateErr != nil {
-		return updateErr
-	}
+	err = UpdateName(args.Id, args.Name)
 	
-	// ---
-	
-	return nil
+	return err
 }
 
 // ---
@@ -341,76 +196,31 @@ type UpdatePasswordReply struct {
 // ---
 
 func (s *UserMicroservice) UpdatePassword(r *http.Request, args *UpdatePasswordArgs, reply *UpdatePasswordReply) (error) {
-	result := UserEntry{}
+	var err error
 	
-	findErr := MongoCollection.Find(bson.M{"id": args.Id}).One(&result)
+	err = UpdatePassword(args.Id, args.Password)
 	
-	if findErr != nil {
-		if findErr == mgo.ErrNotFound {
-			return ErrNotFound
-		} else {
-			return findErr
-		}
-	}
-	
-	// ---
-	
-	updateErr := MongoCollection.Update(bson.M{"id": args.Id}, bson.M{"$set": bson.M{"passwordHash": passwordHash(args.Password, result.PasswordSalt)}})
-	
-	if updateErr != nil {
-		return updateErr
-	}
-	
-	// ---
-	
-	return nil
+	return err
 }
 
 // ---
 // ---
 // ---
 
-type StartVerificationArgs struct {
+type StartVerifyArgs struct {
 	Id Id `json:"id"`
 }
 
-type StartVerificationReply struct {
-	Token string `json:"token"`
+type StartVerifyReply struct {
+	Token Token `json:"token"`
 }
 
-func (s *UserMicroservice) StartVerification(r *http.Request, args *StartVerificationArgs, reply *StartVerificationReply) (error) {
-	result := UserEntry{}
+func (s *UserMicroservice) StartVerify(r *http.Request, args *StartVerifyArgs, reply *StartVerifyReply) (error) {
+	var err error
 	
-	findErr := MongoCollection.Find(bson.M{"id": args.Id}).One(&result)
+	reply.Token, err = StartVerify(args.Id)
 	
-	if findErr != nil {
-		if findErr == mgo.ErrNotFound {
-			return ErrNotFound
-		} else {
-			return findErr
-		}
-	}
-	
-	// ---
-	
-	token := jwt.New(jwt.SigningMethodHS256)
-	
-	token.Claims["uid"] = string(args.Id)
-	token.Claims["exp"] = time.Now().Add(time.Hour * 1).Unix()
-	
-	tokenString, tokenStringErr := token.SignedString([]byte(VerificationKey))
-	
-	if tokenStringErr != nil {
-		return tokenStringErr
-	}
-	
-	// ---
-	
-	reply.Token = tokenString
-	
-	// ---
-	
-	return nil
+	return err
 }
 
 // ---
@@ -418,36 +228,58 @@ func (s *UserMicroservice) StartVerification(r *http.Request, args *StartVerific
 // ---
 
 type VerifyArgs struct {
-	Token string `json:"token"`
+	Token Token `json:"token"`
 }
 
 type VerifyReply struct {
 }
 
 func (s *UserMicroservice) Verify(r *http.Request, args *VerifyArgs, reply *VerifyReply) (error) {
-	token, tokenErr := jwt.Parse(args.Token, func(token *jwt.Token) (interface{}, error) {
-		return []byte(VerificationKey), nil
-	})
+	var err error
 	
-	if tokenErr != nil {
-		return tokenErr
-	}
+	err = Verify(args.Token)
 	
-	if !token.Valid {
-		return ErrInvalidToken
-	}
+	return err
+}
+
+// ---
+// ---
+// ---
+
+type StartResetArgs struct {
+	Id Id `json:"id"`
+}
+
+type StartResetReply struct {
+	Token Token `json:"token"`
+}
+
+func (s *UserMicroservice) StartReset(r *http.Request, args *StartResetArgs, reply *StartResetReply) (error) {
+	var err error
 	
-	// ---
+	reply.Token, err = StartReset(args.Id)
 	
-	updateErr := MongoCollection.Update(bson.M{"id": token.Claims["uid"]}, bson.M{"$set": bson.M{"verified": true}})
+	return err
+}
+
+// ---
+// ---
+// ---
+
+type ResetArgs struct {
+	Token Token `json:"token"`
+	Password Password `json:"password"`
+}
+
+type ResetReply struct {
+}
+
+func (s *UserMicroservice) Reset(r *http.Request, args *ResetArgs, reply *ResetReply) (error) {
+	var err error
 	
-	if updateErr != nil {
-		return updateErr
-	}
+	err = Reset(args.Token, args.Password)
 	
-	// ---
-	
-	return nil
+	return err
 }
 
 // ---
