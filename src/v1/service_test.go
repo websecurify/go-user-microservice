@@ -205,6 +205,37 @@ func doVerify(token Token) (VerifyReply, error) {
 	return r, e
 }
 
+func doStartReset(id Id) (StartResetReply, error) {
+	s := UserMicroservice{}
+	
+	a := StartResetArgs{
+		Id: id,
+	}
+	
+	r := StartResetReply{
+	}
+	
+	e := s.StartReset(nil, &a, &r)
+	
+	return r, e
+}
+
+func doReset(token Token, password Password) (ResetReply, error) {
+	s := UserMicroservice{}
+	
+	a := ResetArgs{
+		Token: token,
+		Password: password,
+	}
+	
+	r := ResetReply{
+	}
+	
+	e := s.Reset(nil, &a, &r)
+	
+	return r, e
+}
+
 // ---
 // ---
 // ---
@@ -361,6 +392,34 @@ func TestEndToEnd(t *testing.T) {
 	
 	if qr2.Verified != true {
 		t.Error("verified mismatch")
+	}
+	
+	// ---
+	
+	srr, sre := doStartReset(cr.Id)
+	
+	if sre != nil {
+		t.Error(sre)
+	}
+	
+	if srr.Token == "" {
+		t.Error("token mismatch")
+	}
+	
+	// ---
+	
+	_, re := doReset(srr.Token, Password("new password"))
+	
+	if re != nil {
+		t.Error(re)
+	}
+	
+	// ---
+	
+	_, rle := doLogin(cr.Id, Password("new password"))
+	
+	if rle != nil {
+		t.Error(rle)
 	}
 	
 	// ---
